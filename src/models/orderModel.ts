@@ -1,4 +1,4 @@
-import { Schema, model, Types } from 'mongoose';
+import { Schema, model, Types } from "mongoose";
 
 type CartItems = {
   name: string;
@@ -20,21 +20,23 @@ interface IOrder {
   shippingAddress: AddressType;
   totalPrice: number;
   isPaid: boolean;
+  status: "order" | "shipped" | "delivered" | "received";
 }
 
 const orderSchema = new Schema<IOrder>(
   {
-    user: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
+    user: { type: Schema.Types.ObjectId, required: true, ref: "User" },
     cartItems: [
       {
         name: { type: String, required: true },
         qty: { type: Number, required: true },
         image: { type: String, required: true },
         price: { type: Number, required: true },
+        price_sale: { type: Number, required: true },
         _id: {
           type: Schema.Types.ObjectId,
           required: true,
-          ref: 'Product',
+          ref: "Product",
         },
       },
     ],
@@ -46,12 +48,18 @@ const orderSchema = new Schema<IOrder>(
     },
     totalPrice: { type: Number, required: true, default: 0.0 },
     isPaid: { type: Boolean, required: true, default: false },
+    status: {
+      type: String,
+      required: true,
+      enum: ["order", "shipping", "delivered", 'received'],
+      default: "order",
+    },
   },
   {
     timestamps: true,
   }
 );
 
-const Order = model<IOrder>('Order', orderSchema);
+const Order = model<IOrder>("Order", orderSchema);
 
 export default Order;

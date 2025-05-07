@@ -17,6 +17,7 @@ interface IProduct {
   qty?: number;
   reviews: Review[];
   // _id: string;
+  price_sale?: number;
 }
 
 
@@ -42,6 +43,7 @@ const productSchema = new Schema<IProduct>(
     description: { type: String, required: true },
     qty: Number,
     reviews: [reviewSchema],
+    price_sale:Number
   },
   {
     timestamps: true,

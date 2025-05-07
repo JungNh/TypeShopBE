@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import Order from "../models/orderModel";
+import Product from "../models/productModel";
 
 // @desc    get all orders
 // @route   Get /api/orders
@@ -51,6 +52,18 @@ export const payOrder = asyncHandler(async (req: Request, res: Response) => {
   }
 });
 
+export const updateOrder = asyncHandler(async (req: Request, res: Response) => {
+  const order = await Order.findByIdAndUpdate(req.params.id);
+  if (order) {
+    order.status = req.body.status;
+    const updatedOrder = await order.save();
+    res.status(200).json(updatedOrder);
+  } else {
+    res.status(400);
+    throw new Error("Order not found!");
+  }
+});
+
 // @desc    Get order by ID
 // @route   GET /api/orders/:id
 // @access  Private
@@ -76,6 +89,21 @@ export const deleteOrder = asyncHandler(async (req: Request, res: Response) => {
   const order = await Order.findById(req.params.id);
 
   if (order) {
+    for (const item of order?.cartItems) {
+      const product = await Product.findById(item._id);
+      if (product) {
+        if (product.qty !== undefined) {
+          product.qty += item.qty;
+        }
+        await product.save();
+      }
+    }
+  } else {
+    res.status(400);
+    throw new Error("Order not found!");
+  }
+
+  if (order) {
     await order.remove();
     res.status(200).json("order has been deleted");
   } else {
@@ -97,6 +125,16 @@ export const createOrder = asyncHandler(async (req: any, res: Response) => {
     totalPrice,
     user: req.user._id,
   });
+
+  for (const item of cartItems) {
+    const product = await Product.findById(item._id);
+    if (product) {
+      if (product.qty !== undefined) {
+        product.qty -= item.qty;
+      }
+      await product.save();
+    }
+  }
 
   if (cartItems.length === 0) {
     res.status(400);
