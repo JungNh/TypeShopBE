@@ -10,7 +10,7 @@ type CartItems = {
 type AddressType = {
   address: string;
   city: string;
-  postalCode: string;
+  phone: string;
   country: string;
 };
 
@@ -43,7 +43,7 @@ const orderSchema = new Schema<IOrder>(
     shippingAddress: {
       address: { type: String, required: true },
       city: { type: String, required: true },
-      postalCode: { type: String, required: true },
+      phone: { type: String, required: true },
       country: { type: String, required: true },
     },
     totalPrice: { type: Number, required: true, default: 0.0 },
