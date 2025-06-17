@@ -20,7 +20,7 @@ interface IOrder {
   shippingAddress: AddressType;
   totalPrice: number;
   isPaid: boolean;
-  status: "order" | "shipped" | "delivered" | "received";
+  status: "order" | "shipped" | "delivered" | "received" | "cancelled";
 }
 
 const orderSchema = new Schema<IOrder>(
@@ -41,6 +41,7 @@ const orderSchema = new Schema<IOrder>(
       },
     ],
     shippingAddress: {
+      nameCus: { type: String, required: true },
       address: { type: String, required: true },
       city: { type: String, required: true },
       phone: { type: String, required: true },
@@ -51,7 +52,7 @@ const orderSchema = new Schema<IOrder>(
     status: {
       type: String,
       required: true,
-      enum: ["order", "shipping", "delivered", 'received'],
+      enum: ["order", "shipping", "delivered", 'received','cancelled'],
       default: "order",
     },
   },

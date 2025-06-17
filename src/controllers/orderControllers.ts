@@ -25,7 +25,7 @@ export const getOrderList = asyncHandler(
 // @access  Private
 
 export const getUserOrder = asyncHandler(async (req: any, res: Response) => {
-  const orders = await Order.find({ user: req.user._id });
+  const orders = await Order.find({ user: req.user._id }).sort("-createdAt");
 
   if (orders) {
     res.status(200).json(orders);
@@ -56,6 +56,7 @@ export const updateOrder = asyncHandler(async (req: Request, res: Response) => {
   const order = await Order.findByIdAndUpdate(req.params.id);
   if (order) {
     order.status = req.body.status;
+    order.isPaid = req.body?.isPaid ? req.body?.isPaid : order.isPaid;
     const updatedOrder = await order.save();
     res.status(200).json(updatedOrder);
   } else {
